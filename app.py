@@ -1,5 +1,6 @@
 import os
 import logging
+import secrets
 from datetime import datetime, timedelta
 from flask import Flask, session
 from flask_session import Session
@@ -10,7 +11,10 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Create Flask app
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET", "fitplay-secret-key")
+
+# Set SECRET_KEY from environment or generate secure default
+# Use standard Flask SECRET_KEY variable, fallback to SESSION_SECRET for backward compatibility
+app.secret_key = os.environ.get("SECRET_KEY") or os.environ.get("SESSION_SECRET") or secrets.token_hex(32)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Configure session
