@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: fitplay
+    env: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    pythonVersion: 3.11
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000

@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Flask
+instance/
+.webassets-cache
+
+# Session files
+flask_session/
+*.session
+
+# Local env files
+.env
+.env.local
+.env.*.local
+
+# User data files (should use database instead)
+users.json
+user.json
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# LLM/AI
+.llm_cache/
+
+# OS
+Thumbs.db
+.created-by-render

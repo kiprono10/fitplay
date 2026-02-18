@@ -1,0 +1,68 @@
+import os
+import logging
+from datetime import datetime, timedelta
+from flask import Flask, session
+from flask_session import Session
+from werkzeug.middleware.proxy_fix import ProxyFix
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+
+# Create Flask app
+app = Flask(__name__)
+app.secret_key = os.environ.get("SESSION_SECRET", "fitplay-secret-key")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+# Configure session
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_KEY_PREFIX'] = 'fitplay:'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+
+Session(app)
+
+# Initialize session data
+@app.before_request
+def initialize_session():
+    if 'user_id' not in session:
+        session['user_id'] = 'guest'
+        session['username'] = 'FitPlayer'
+        session['points'] = 0
+        session['badges'] = []
+        session['workouts_completed'] = 0
+        session['calories_burned'] = 0
+        session['time_active'] = 0
+        session['daily_usage'] = 0
+        session['last_activity'] = datetime.now().isoformat()
+        session['activities'] = []
+        session['age'] = 18
+        session['weight'] = 70
+        session['fitness_goal'] = 'weight_loss'
+        session['diet_plan'] = []
+
+# Register blueprints
+from blueprints.main import main_bp
+from blueprints.games import games_bp
+from blueprints.dashboard import dashboard_bp
+from blueprints.diet import diet_bp
+from blueprints.auth.auth import auth_bp
+from blueprints.auth.auth import get_current_user
+
+app.register_blueprint(main_bp)
+app.register_blueprint(games_bp, url_prefix='/games')
+app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+app.register_blueprint(diet_bp, url_prefix='/diet')
+app.register_blueprint(auth_bp, url_prefix='/auth')
+
+# Global template variables
+@app.context_processor
+def inject_globals():
+    return {
+        'current_user': get_current_user() 
+    }
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') == 'development'
+    app.run(host='0.0.0.0', port=port, debug=debug)
